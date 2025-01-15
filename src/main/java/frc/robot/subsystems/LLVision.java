@@ -1,3 +1,4 @@
+
 package frc.robot.subsystems;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -8,44 +9,47 @@ import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
 
 public class LLVision extends SubsystemBase {
-    NetworkTable table;
-    NetworkTableEntry xOffset;
-    NetworkTableEntry yOffset;
-    NetworkTableEntry area;
+    Limelight[] limelights;
+
+    class Limelight {
+        String name;
+        NetworkTable table;
+        NetworkTableEntry xOffsetEntry;
+        NetworkTableEntry yOffsetEntry;
+        NetworkTableEntry areaEntry;
+
+        public Limelight(String name) {
+            this.name = name;
+            table = NetworkTableInstance.getDefault().getTable(name);
+            xOffsetEntry = table.getEntry("tx");
+            yOffsetEntry = table.getEntry("ty");
+            areaEntry = table.getEntry("ta");
+        }
+
+        public String getName() {
+            return name;
+        }
+
+        public double getXOffset() {
+            return xOffsetEntry.getDouble(361.0);
+        }
+
+        public double getYOffset() {
+            return yOffsetEntry.getDouble(69.0);
+        }
+
+        public double getAreaOffset() {
+            return areaEntry.getDouble(101.0);
+        }
+    }
+
 
     /** Creates a new ExampleSubsystem. */
-    public LLVision() {
-        table = NetworkTableInstance.getDefault().getTable("limelight");
-        xOffset = table.getEntry("tx");
-        yOffset = table.getEntry("ty");
-        area = table.getEntry("ta");
-    }
-
-    /**
-     * Default value is 361.0
-     * @return  horizontal offset in degrees 
-     * from target
-     */
-    public double getXOffset() {
-        return xOffset.getDouble(361.0);
-    }
-
-    /**
-     * Default value is 361.0
-     * @return  vertical offset in degrees 
-     * from target
-     */
-    public double getYOffset() {
-        return yOffset.getDouble(361.0);
-    }
-
-    /**
-     * Default value is 101.0
-     * @return  area of target in field of 
-     * view by percentage
-     */
-    public double getArea() {
-        return area.getDouble(101.0);
+    public LLVision(String... names) {
+        limelights = new Limelight[names.length];
+        for (int i = 0; i < names.length; i++) {
+          limelights[i] = new Limelight(names[i]);                                                                                                                                                              
+        }
     }
     
     /**
@@ -74,28 +78,17 @@ public class LLVision extends SubsystemBase {
 
     @Override
     public void periodic() {
+        
     }
 
     @Override
     public void simulationPeriodic() {
-        System.out.println(xOffset.getDouble(361.0));
-        System.out.println(yOffset.getDouble(362.0));
-    }
-
-    public void print(double number) {
-        System.out.println(number);
-    }
-
-    public void print(int number) {
-        System.out.println(number);
-    }
-
-    public void print(String number) {
-        System.out.println(number);
-    }
-
-    public void print(Object object) {
-        System.out.
-        println(object);
+        for (Limelight limelight : limelights) {
+            System.out.printf("Name: %s \n", limelight.getName());
+            System.out.println(limelight.getXOffset());
+            System.out.println(limelight.getYOffset());
+            System.out.println(limelight.getAreaOffset());
+        }
+              
     }
 }
