@@ -4,8 +4,10 @@
 
 package frc.robot.commands;
 
+import frc.robot.LimeLightHelpers;
 import frc.robot.subsystems.ExampleSubsystem;
 import frc.robot.subsystems.LimeLight;
+import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.wpilibj2.command.Command;
 
 /** An example command that uses an example subsystem. */
@@ -30,7 +32,33 @@ public class Center extends Command {
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
-  public void execute() {}
+  public void execute() {
+    LimeLightHelpers.PoseEstimate mt1 = LimeLightHelpers. getBotPoseEstimate_wpiBlue("limelight");
+
+      if (mt1.tagCount ==  1 && mt1.rawFiducials.length == 1) {
+        if (mt1.rawFiducials[0].ambiguity > .7) {
+          boolean doRejectUpdate = true;
+        }
+
+        if (mt1.rawFiducials[0].distToCamera > 3) {
+          boolean doRejectUpdate = true;
+        }
+      }
+
+      if (mt1.tagCount == 0) {
+        boolean doRejectUpdate = true;
+      }
+
+      boolean doRejectUpdate;
+            if(!doRejectUpdate) {
+        Object m_poseEstimator;
+                m_poseEstimator.setVisionMeasurementStdDevs(VecBuilder.fill(.5, .5, 999999));
+                m_poseEstimator.addVisionMeasurement (
+                  mt1.pose,
+                  mt1.timestampsSeconds
+                );
+      }
+  }
 
   // Called once the command ends or is interrupted.
   @Override
